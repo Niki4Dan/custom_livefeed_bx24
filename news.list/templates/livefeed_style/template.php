@@ -1463,6 +1463,115 @@ if (Loader::includeModule('pull')) {
 		font-size: 14px;
 		margin: 0 2px;
 	}
+
+
+	/* Пагинация в серых тонах */
+.b24-feed-pagination {
+    text-align: center;
+    margin-top: 40px;
+}
+
+.b24-feed-pagination .navigation {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: #ffffff;
+    padding: 6px 12px;
+    border-radius: 40px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+.b24-feed-pagination .navigation-pages {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.b24-feed-pagination .navigation-title {
+    display: none;
+}
+
+.b24-feed-pagination .navigation-page-numb,
+.b24-feed-pagination .navigation-current-page {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 38px;
+    height: 38px;
+    border-radius: 20px;
+    font-size: 14px;
+    font-weight: 500;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    background: #f4f6f9;
+    color: #5a6874;
+    border: none;
+}
+
+.b24-feed-pagination .navigation-page-numb:hover {
+    background: #e8ecf1;
+    color: #2c3e50;
+    transform: scale(1.02);
+}
+
+.b24-feed-pagination .navigation-current-page {
+    background: #e8ecf1;
+    color: #2c3e50;
+    font-weight: 600;
+    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.04);
+}
+
+.b24-feed-pagination .navigation-arrows {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    margin-left: 8px;
+}
+
+.b24-feed-pagination .navigation-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    padding: 8px 14px;
+    border-radius: 30px;
+    font-size: 13px;
+    font-weight: 500;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    background: #f4f6f9;
+    color: #5a6874;
+    border: none;
+}
+
+.b24-feed-pagination .navigation-button:hover {
+    background: #e8ecf1;
+    color: #2c3e50;
+}
+
+.b24-feed-pagination .navigation-button.navigation-disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+.b24-feed-pagination .navigation-ctrl-before,
+.b24-feed-pagination .navigation-ctrl-after {
+    display: none;
+}
+
+@media (max-width: 600px) {
+    .b24-feed-pagination .navigation-page-numb,
+    .b24-feed-pagination .navigation-current-page {
+        min-width: 34px;
+        height: 34px;
+        font-size: 13px;
+    }
+    
+    .b24-feed-pagination .navigation-button {
+        padding: 6px 12px;
+        font-size: 12px;
+    }
+}
 </style>
 
 
@@ -1611,7 +1720,7 @@ if (Loader::includeModule('pull')) {
 
 												<?php if (!empty($hiddenRecipients)): ?>
 													<?php foreach ($hiddenRecipients as $index => $recipient): ?>
-														<span class="b24-recipient-link" data-user-id="<?= $recipient['id'] ?>"><?= $recipient['name'] ?></span><?= ($index < count($hiddenRecipients) - 1) ? ', ' : '' ?>
+														, <span class="b24-recipient-link" data-user-id="<?= $recipient['id'] ?>"><?= $recipient['name'] ?></span><?= ($index < count($hiddenRecipients) - 1) ? ', ' : '' ?>
 													<?php endforeach; ?>
 												<?php endif; ?>
 

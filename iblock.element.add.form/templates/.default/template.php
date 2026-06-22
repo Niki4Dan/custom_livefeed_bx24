@@ -517,7 +517,7 @@ if (!CModule::IncludeModule("intranet")) {
 	}
 
 	/* ========== СТИЛИ ДЛЯ РЕДАКТИРОВАНИЯ ИЗОБРАЖЕНИЙ ========== */
-	
+
 	/* Стили для изображений внутри редактора */
 	.bx-editor-iframe img {
 		max-width: 100% !important;
@@ -640,6 +640,7 @@ if (!CModule::IncludeModule("intranet")) {
 			opacity: 0;
 			transform: scale(0.95);
 		}
+
 		to {
 			opacity: 1;
 			transform: scale(1);
@@ -707,6 +708,7 @@ if (!CModule::IncludeModule("intranet")) {
 			opacity: 0;
 			transform: translateY(-4px);
 		}
+
 		to {
 			opacity: 1;
 			transform: translateY(0);
@@ -884,7 +886,8 @@ if (!CModule::IncludeModule("intranet")) {
 								"SELECTOR_OPTIONS" => array(
 									'enableSearch' => 'Y',
 									'enableDepartments' => 'Y',
-									'enableUsers' => 'Y',
+									'enableSonetgroups' => 'Y',
+									'enableSocialGroups' => 'Y',
 									'departmentSelectDisable' => 'N',
 									'returnOnlyUsers' => 'N'
 								)
@@ -915,6 +918,7 @@ if (!CModule::IncludeModule("intranet")) {
 									'enableSearch' => 'Y',
 									'enableDepartments' => 'Y',
 									'enableUsers' => 'Y',
+									'enableSonetgroups' => 'Y',
 									'departmentSelectDisable' => 'N',
 									'returnOnlyUsers' => 'N'
 								)
@@ -1231,8 +1235,21 @@ if (!CModule::IncludeModule("intranet")) {
 			renderUploadedFiles();
 			updateFileInput();
 			if (window.BXMainUserSelector) {
-				if (window.BXMainUserSelector.recipients_selector) window.BXMainUserSelector.recipients_selector.clearSelectedItems();
-				if (window.BXMainUserSelector.norecipients_selector) window.BXMainUserSelector.norecipients_selector.clearSelectedItems();
+				if (window.BXMainUserSelector.recipients_selector) {
+					window.BXMainUserSelector.recipients_selector.clearSelectedItems();
+					// Очищаем также группы
+					var groups = document.querySelectorAll('#recipients_selector .main-user-selector-item[data-type="SG"]');
+					groups.forEach(function(item) {
+						item.remove();
+					});
+				}
+				if (window.BXMainUserSelector.norecipients_selector) {
+					window.BXMainUserSelector.norecipients_selector.clearSelectedItems();
+					var groups = document.querySelectorAll('#norecipients_selector .main-user-selector-item[data-type="SG"]');
+					groups.forEach(function(item) {
+						item.remove();
+					});
+				}
 			}
 			// Удаляем все меню изображений
 			hideAllEditorMenus();
@@ -1376,7 +1393,7 @@ if (!CModule::IncludeModule("intranet")) {
 			}
 			parent = parent.parentElement;
 		}
-		
+
 		// Проверяем через iframe
 		try {
 			const iframes = document.querySelectorAll('.bx-editor-iframe');
@@ -1386,10 +1403,10 @@ if (!CModule::IncludeModule("intranet")) {
 					if (iframeDoc && iframeDoc.contains(img)) {
 						return true;
 					}
-				} catch(e) {}
+				} catch (e) {}
 			}
-		} catch(e) {}
-		
+		} catch (e) {}
+
 		return false;
 	}
 
@@ -1402,7 +1419,7 @@ if (!CModule::IncludeModule("intranet")) {
 				if (doc && doc.body) {
 					return iframe;
 				}
-			} catch(e) {}
+			} catch (e) {}
 		}
 		return null;
 	}
@@ -1413,7 +1430,7 @@ if (!CModule::IncludeModule("intranet")) {
 		if (iframe) {
 			try {
 				return iframe.contentDocument || iframe.contentWindow.document;
-			} catch(e) {}
+			} catch (e) {}
 		}
 		return null;
 	}
@@ -1423,10 +1440,10 @@ if (!CModule::IncludeModule("intranet")) {
 		if (!isInsideMessageEditor(img)) {
 			return null;
 		}
-		
+
 		// Проверяем, есть ли уже меню для этого изображения
 		const menuId = 'menu_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5);
-		
+
 		const menu = document.createElement('div');
 		menu.className = 'b24-image-menu';
 		menu.id = menuId;
@@ -1445,7 +1462,7 @@ if (!CModule::IncludeModule("intranet")) {
 			pointer-events: auto !important;
 			display: none;
 		`;
-		
+
 		const resizeBtn = document.createElement('button');
 		resizeBtn.className = 'b24-image-menu-btn';
 		resizeBtn.innerHTML = `
@@ -1478,7 +1495,7 @@ if (!CModule::IncludeModule("intranet")) {
 		resizeBtn.addEventListener('mouseleave', function() {
 			this.style.background = 'transparent';
 		});
-		
+
 		const resetBtn = document.createElement('button');
 		resetBtn.className = 'b24-image-menu-btn';
 		resetBtn.innerHTML = `
@@ -1508,10 +1525,10 @@ if (!CModule::IncludeModule("intranet")) {
 		resetBtn.addEventListener('mouseleave', function() {
 			this.style.background = 'transparent';
 		});
-		
+
 		menu.appendChild(resizeBtn);
 		menu.appendChild(resetBtn);
-		
+
 		// Добавляем меню в оверлей
 		const overlay = document.getElementById('imageMenuOverlay');
 		if (overlay) {
@@ -1519,10 +1536,10 @@ if (!CModule::IncludeModule("intranet")) {
 		} else {
 			document.body.appendChild(menu);
 		}
-		
+
 		// Сохраняем ссылку на изображение в меню
 		menu._targetImg = img;
-		
+
 		resizeBtn.addEventListener('click', function(e) {
 			e.stopPropagation();
 			e.preventDefault();
@@ -1532,7 +1549,7 @@ if (!CModule::IncludeModule("intranet")) {
 			}
 			hideAllEditorMenus();
 		});
-		
+
 		resetBtn.addEventListener('click', function(e) {
 			e.stopPropagation();
 			e.preventDefault();
@@ -1542,7 +1559,7 @@ if (!CModule::IncludeModule("intranet")) {
 			}
 			hideAllEditorMenus();
 		});
-		
+
 		return menu;
 	}
 
@@ -1556,7 +1573,7 @@ if (!CModule::IncludeModule("intranet")) {
 		if (!isInsideMessageEditor(img)) {
 			return;
 		}
-		
+
 		// Находим существующее меню для этого изображения
 		let menu = null;
 		const menus = document.querySelectorAll('.b24-image-menu');
@@ -1566,18 +1583,18 @@ if (!CModule::IncludeModule("intranet")) {
 				break;
 			}
 		}
-		
+
 		if (!menu) {
 			menu = createEditorImageMenu(img);
 			if (!menu) return;
 		}
-		
+
 		// Позиционируем меню относительно изображения
 		const rect = img.getBoundingClientRect();
 		menu.style.left = (rect.right - 10) + 'px';
 		menu.style.top = (rect.top - 10) + 'px';
 		menu.style.display = 'block';
-		
+
 		// Скрываем другие меню
 		document.querySelectorAll('.b24-image-menu').forEach(function(m) {
 			if (m !== menu) {
@@ -1602,12 +1619,12 @@ if (!CModule::IncludeModule("intranet")) {
 		const width = img.offsetWidth || img.clientWidth || img.naturalWidth || 100;
 		const height = img.offsetHeight || img.clientHeight || img.naturalHeight || 100;
 		const aspectRatio = width / height;
-		
+
 		editorImageResizeState.currentImage = img;
 		editorImageResizeState.currentWidth = width;
 		editorImageResizeState.currentHeight = height;
 		editorImageResizeState.aspectRatio = aspectRatio;
-		
+
 		if (editorImageResizeState.modal) {
 			updateEditorModalValues();
 			editorImageResizeState.modal.style.display = 'flex';
@@ -1615,21 +1632,21 @@ if (!CModule::IncludeModule("intranet")) {
 			editorImageResizeState.modal.style.transform = 'scale(1)';
 			return;
 		}
-		
+
 		createEditorResizeModal();
 	}
 
 	function updateEditorModalValues() {
 		const img = editorImageResizeState.currentImage;
 		if (!img) return;
-		
+
 		const width = img.offsetWidth || img.clientWidth || img.naturalWidth || 100;
 		const height = img.offsetHeight || img.clientHeight || img.naturalHeight || 100;
-		
+
 		editorImageResizeState.currentWidth = width;
 		editorImageResizeState.currentHeight = height;
 		editorImageResizeState.aspectRatio = width / height;
-		
+
 		if (editorImageResizeState.preview) {
 			editorImageResizeState.preview.src = img.src;
 			editorImageResizeState.preview.style.width = width + 'px';
@@ -1638,19 +1655,19 @@ if (!CModule::IncludeModule("intranet")) {
 			editorImageResizeState.preview.style.maxHeight = '300px';
 			editorImageResizeState.preview.style.objectFit = 'contain';
 		}
-		
+
 		if (editorImageResizeState.widthInput) {
 			editorImageResizeState.widthInput.value = Math.round(width);
 		}
-		
+
 		if (editorImageResizeState.heightInput) {
 			editorImageResizeState.heightInput.value = Math.round(height);
 		}
-		
+
 		if (editorImageResizeState.slider) {
 			editorImageResizeState.slider.value = 100;
 		}
-		
+
 		if (editorImageResizeState.sizeDisplay) {
 			editorImageResizeState.sizeDisplay.textContent = Math.round(width) + ' × ' + Math.round(height);
 		}
@@ -1674,7 +1691,7 @@ if (!CModule::IncludeModule("intranet")) {
 			padding: 20px;
 			animation: fadeIn 0.3s ease;
 		`;
-		
+
 		const content = document.createElement('div');
 		content.style.cssText = `
 			background: #ffffff;
@@ -1688,7 +1705,7 @@ if (!CModule::IncludeModule("intranet")) {
 			overflow-y: auto;
 			font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
 		`;
-		
+
 		const header = document.createElement('div');
 		header.style.cssText = `
 			display: flex;
@@ -1701,7 +1718,7 @@ if (!CModule::IncludeModule("intranet")) {
 			<button class="b24-resize-close" style="background: none; border: none; font-size: 24px; cursor: pointer; color: #94a3b8; padding: 4px 8px; border-radius: 8px; transition: all 0.2s ease; line-height: 1;">×</button>
 		`;
 		content.appendChild(header);
-		
+
 		const previewContainer = document.createElement('div');
 		previewContainer.style.cssText = `
 			background: #f8fafc;
@@ -1725,10 +1742,10 @@ if (!CModule::IncludeModule("intranet")) {
 		`;
 		previewContainer.appendChild(preview);
 		content.appendChild(previewContainer);
-		
+
 		const sliderSection = document.createElement('div');
 		sliderSection.style.cssText = `margin-bottom: 20px;`;
-		
+
 		const sliderLabel = document.createElement('div');
 		sliderLabel.style.cssText = `
 			display: flex;
@@ -1741,7 +1758,7 @@ if (!CModule::IncludeModule("intranet")) {
 			<span class="b24-resize-size-display" style="font-size: 14px; color: #2fc6f6; font-weight: 600;">100 × 100</span>
 		`;
 		sliderSection.appendChild(sliderLabel);
-		
+
 		const slider = document.createElement('input');
 		slider.className = 'b24-resize-slider';
 		slider.type = 'range';
@@ -1759,7 +1776,7 @@ if (!CModule::IncludeModule("intranet")) {
 		`;
 		sliderSection.appendChild(slider);
 		content.appendChild(sliderSection);
-		
+
 		const inputsSection = document.createElement('div');
 		inputsSection.style.cssText = `
 			display: grid;
@@ -1767,14 +1784,14 @@ if (!CModule::IncludeModule("intranet")) {
 			gap: 12px;
 			margin-bottom: 20px;
 		`;
-		
+
 		const widthGroup = document.createElement('div');
 		widthGroup.innerHTML = `
 			<label style="display: block; font-size: 13px; color: #64748b; margin-bottom: 4px;">Ширина (px)</label>
 			<input type="number" class="b24-resize-width" style="width: 100%; padding: 8px 12px; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 14px; outline: none; transition: border-color 0.2s ease;" min="10">
 		`;
 		inputsSection.appendChild(widthGroup);
-		
+
 		const heightGroup = document.createElement('div');
 		heightGroup.innerHTML = `
 			<label style="display: block; font-size: 13px; color: #64748b; margin-bottom: 4px;">Высота (px)</label>
@@ -1782,7 +1799,7 @@ if (!CModule::IncludeModule("intranet")) {
 		`;
 		inputsSection.appendChild(heightGroup);
 		content.appendChild(inputsSection);
-		
+
 		const aspectCheckbox = document.createElement('div');
 		aspectCheckbox.style.cssText = `
 			display: flex;
@@ -1795,7 +1812,7 @@ if (!CModule::IncludeModule("intranet")) {
 			<label for="editorResizeAspect" style="font-size: 14px; color: #1a2a3a; cursor: pointer;">Сохранять пропорции</label>
 		`;
 		content.appendChild(aspectCheckbox);
-		
+
 		const actions = document.createElement('div');
 		actions.style.cssText = `
 			display: flex;
@@ -1804,7 +1821,7 @@ if (!CModule::IncludeModule("intranet")) {
 			border-top: 1px solid #f0f2f4;
 			padding-top: 16px;
 		`;
-		
+
 		const cancelBtn = document.createElement('button');
 		cancelBtn.textContent = 'Отмена';
 		cancelBtn.style.cssText = `
@@ -1817,7 +1834,7 @@ if (!CModule::IncludeModule("intranet")) {
 			color: #64748b;
 			transition: all 0.2s ease;
 		`;
-		
+
 		const applyBtn = document.createElement('button');
 		applyBtn.textContent = 'Применить';
 		applyBtn.style.cssText = `
@@ -1831,23 +1848,23 @@ if (!CModule::IncludeModule("intranet")) {
 			color: #ffffff;
 			transition: all 0.2s ease;
 		`;
-		
+
 		actions.appendChild(cancelBtn);
 		actions.appendChild(applyBtn);
 		content.appendChild(actions);
-		
+
 		modal.appendChild(content);
 		document.body.appendChild(modal);
-		
+
 		editorImageResizeState.modal = modal;
 		editorImageResizeState.slider = slider;
 		editorImageResizeState.widthInput = widthGroup.querySelector('.b24-resize-width');
 		editorImageResizeState.heightInput = heightGroup.querySelector('.b24-resize-height');
 		editorImageResizeState.preview = preview;
 		editorImageResizeState.sizeDisplay = sliderLabel.querySelector('.b24-resize-size-display');
-		
+
 		updateEditorModalValues();
-		
+
 		const closeBtn = header.querySelector('.b24-resize-close');
 		closeBtn.addEventListener('click', function() {
 			closeEditorResizeModal();
@@ -1858,7 +1875,7 @@ if (!CModule::IncludeModule("intranet")) {
 		closeBtn.addEventListener('mouseleave', function() {
 			this.style.background = 'transparent';
 		});
-		
+
 		cancelBtn.addEventListener('click', function() {
 			closeEditorResizeModal();
 		});
@@ -1868,7 +1885,7 @@ if (!CModule::IncludeModule("intranet")) {
 		cancelBtn.addEventListener('mouseleave', function() {
 			this.style.background = 'transparent';
 		});
-		
+
 		applyBtn.addEventListener('click', function() {
 			applyEditorResize();
 		});
@@ -1880,55 +1897,55 @@ if (!CModule::IncludeModule("intranet")) {
 			this.style.background = '#2fc6f6';
 			this.style.transform = 'none';
 		});
-		
+
 		modal.addEventListener('click', function(e) {
 			if (e.target === modal) {
 				closeEditorResizeModal();
 			}
 		});
-		
+
 		document.addEventListener('keydown', function(e) {
 			if (e.key === 'Escape' && modal.style.display === 'flex') {
 				closeEditorResizeModal();
 			}
 		});
-		
+
 		slider.addEventListener('input', function() {
 			const percent = parseInt(this.value) / 100;
 			const newWidth = Math.round(editorImageResizeState.currentWidth * percent);
 			const newHeight = Math.round(editorImageResizeState.currentHeight * percent);
-			
+
 			editorImageResizeState.widthInput.value = newWidth;
 			editorImageResizeState.heightInput.value = newHeight;
 			editorImageResizeState.sizeDisplay.textContent = newWidth + ' × ' + newHeight;
-			
+
 			editorImageResizeState.preview.style.width = newWidth + 'px';
 			editorImageResizeState.preview.style.height = newHeight + 'px';
 		});
-		
+
 		editorImageResizeState.widthInput.addEventListener('input', function() {
 			const newWidth = parseInt(this.value) || 0;
 			const aspectCheckbox = document.querySelector('#editorResizeAspect');
-			
+
 			if (aspectCheckbox && aspectCheckbox.checked && newWidth > 0) {
 				const newHeight = Math.round(newWidth / editorImageResizeState.aspectRatio);
 				editorImageResizeState.heightInput.value = newHeight;
 				editorImageResizeState.sizeDisplay.textContent = newWidth + ' × ' + newHeight;
-				
+
 				editorImageResizeState.preview.style.width = newWidth + 'px';
 				editorImageResizeState.preview.style.height = newHeight + 'px';
 			}
 		});
-		
+
 		editorImageResizeState.heightInput.addEventListener('input', function() {
 			const newHeight = parseInt(this.value) || 0;
 			const aspectCheckbox = document.querySelector('#editorResizeAspect');
-			
+
 			if (aspectCheckbox && aspectCheckbox.checked && newHeight > 0) {
 				const newWidth = Math.round(newHeight * editorImageResizeState.aspectRatio);
 				editorImageResizeState.widthInput.value = newWidth;
 				editorImageResizeState.sizeDisplay.textContent = newWidth + ' × ' + newHeight;
-				
+
 				editorImageResizeState.preview.style.width = newWidth + 'px';
 				editorImageResizeState.preview.style.height = newHeight + 'px';
 			}
@@ -1950,18 +1967,18 @@ if (!CModule::IncludeModule("intranet")) {
 	function applyEditorResize() {
 		const img = editorImageResizeState.currentImage;
 		if (!img) return;
-		
+
 		const width = parseInt(editorImageResizeState.widthInput.value) || 0;
 		const height = parseInt(editorImageResizeState.heightInput.value) || 0;
-		
+
 		if (width < 10 || height < 10) {
 			showToast('Размер должен быть не менее 10px', 'error', '⚠️ Ошибка');
 			return;
 		}
-		
+
 		img.style.width = width + 'px';
 		img.style.height = height + 'px';
-		
+
 		showToast('Размер изображения изменен', 'success', '✅ Готово');
 		closeEditorResizeModal();
 	}
@@ -1983,13 +2000,13 @@ if (!CModule::IncludeModule("intranet")) {
 			const textarea = document.querySelector('textarea[name="PROPERTY[PREVIEW_TEXT][0]"]');
 			if (textarea) content = textarea.value;
 		}
-		
+
 		if (!content) return;
-		
+
 		// Создаем временный DOM для очистки
 		const tempDiv = document.createElement('div');
 		tempDiv.innerHTML = content;
-		
+
 		// Удаляем все обертки .b24-image-editable, но сохраняем img
 		const wrappers = tempDiv.querySelectorAll('.b24-image-editable');
 		wrappers.forEach(function(wrapper) {
@@ -2002,7 +2019,7 @@ if (!CModule::IncludeModule("intranet")) {
 				wrapper.parentNode.removeChild(wrapper);
 			}
 		});
-		
+
 		// Очищаем от лишних стилей у изображений
 		const images = tempDiv.querySelectorAll('img');
 		images.forEach(function(img) {
@@ -2019,10 +2036,10 @@ if (!CModule::IncludeModule("intranet")) {
 			// Убираем атрибуты, которые могли появиться
 			img.removeAttribute('data-resizable');
 		});
-		
+
 		// Получаем очищенное содержимое
 		const cleanContent = tempDiv.innerHTML;
-		
+
 		// Обновляем содержимое редактора
 		if (window.BXHtmlEditor && window.BXHtmlEditor.editors) {
 			for (let i in window.BXHtmlEditor.editors) {
@@ -2045,19 +2062,19 @@ if (!CModule::IncludeModule("intranet")) {
 			if (img.dataset.resizable === 'true' || img.dataset.resizable === 'skipped') {
 				return;
 			}
-			
+
 			if (img.parentElement && img.parentElement.classList.contains('b24-image-editable')) {
 				return;
 			}
-			
+
 			const inEditor = isInsideMessageEditor(img);
 			if (!inEditor) {
 				img.dataset.resizable = 'skipped';
 				return;
 			}
-			
+
 			const parent = img.parentNode;
-			
+
 			// Оборачиваем изображение в контейнер для интерактивности (НЕ сохраняется в БД)
 			const container = document.createElement('div');
 			container.className = 'b24-image-editable';
@@ -2069,16 +2086,16 @@ if (!CModule::IncludeModule("intranet")) {
 				line-height: 0;
 				cursor: pointer;
 			`;
-			
+
 			parent.insertBefore(container, img);
 			container.appendChild(img);
-			
+
 			img.style.maxWidth = '100%';
 			img.style.height = 'auto';
-			
+
 			// Обработчик наведения - показываем меню
 			let hideTimeout = null;
-			
+
 			container.addEventListener('mouseenter', function(e) {
 				if (hideTimeout) {
 					clearTimeout(hideTimeout);
@@ -2087,11 +2104,11 @@ if (!CModule::IncludeModule("intranet")) {
 				if (!isInsideMessageEditor(img)) {
 					return;
 				}
-/* 				showEditorImageMenu(img); */
+				/* 				showEditorImageMenu(img); */
 				container.style.outline = '2px dashed #2fc6f6';
 				container.style.outlineOffset = '2px';
 			});
-			
+
 			container.addEventListener('mouseleave', function(e) {
 				// Не скрываем сразу, даем время на наведение на меню
 				hideTimeout = setTimeout(function() {
@@ -2117,7 +2134,7 @@ if (!CModule::IncludeModule("intranet")) {
 					container.style.outlineOffset = '';
 				}, 300);
 			});
-			
+
 			// Клик по изображению открывает модальное окно
 			img.addEventListener('click', function(e) {
 				e.stopPropagation();
@@ -2127,7 +2144,7 @@ if (!CModule::IncludeModule("intranet")) {
 					hideAllEditorMenus();
 				}, 100);
 			});
-			
+
 			img.dataset.resizable = 'true';
 			console.log('✅ Изображение в редакторе сообщения обработано');
 		});
@@ -2135,7 +2152,7 @@ if (!CModule::IncludeModule("intranet")) {
 
 	function initImageResizeForEditor() {
 		console.log('🔄 initImageResizeForEditor вызван');
-		
+
 		// Основной документ - ищем изображения внутри редактора
 		const editorContainer = document.getElementById('editorContainer');
 		if (editorContainer) {
@@ -2143,7 +2160,7 @@ if (!CModule::IncludeModule("intranet")) {
 			console.log('📸 Найдено изображений в редакторе:', mainImages.length);
 			processEditorImages(mainImages);
 		}
-		
+
 		// Iframe редактора
 		const editorIframes = document.querySelectorAll('.bx-editor-iframe');
 		editorIframes.forEach(function(iframe, index) {
@@ -2168,13 +2185,13 @@ if (!CModule::IncludeModule("intranet")) {
 				console.log(`❌ Ошибка доступа к iframe ${index}:`, e.message);
 			}
 		});
-		
+
 		// Наблюдение за изменениями в iframe
 		editorIframes.forEach(function(iframe) {
 			try {
 				const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
 				if (!iframeDoc) return;
-				
+
 				const observer = new MutationObserver(function(mutations) {
 					let hasNewImages = false;
 					mutations.forEach(function(mutation) {
@@ -2197,7 +2214,7 @@ if (!CModule::IncludeModule("intranet")) {
 						}, 300);
 					}
 				});
-				
+
 				observer.observe(iframeDoc.body, {
 					childList: true,
 					subtree: true

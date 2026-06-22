@@ -417,6 +417,61 @@ if ($bAllowAccess) {
 	}
 }
 
+
+
+
+// ========== ФУНКЦИЯ ДЛЯ ПОЛУЧЕНИЯ ПОЛЬЗОВАТЕЛЕЙ ГРУППЫ ==========
+/**
+ * Получение всех пользователей группы (социальной)
+ * @param int $groupId ID группы
+ * @return array Массив ID пользователей
+ */
+function getSocialGroupUsers($groupId)
+{
+	$users = array();
+
+	if (CModule::IncludeModule("socialnetwork")) {
+		// Получаем всех пользователей группы
+		$dbUsers = CSocNetUserToGroup::GetList(
+			array(),
+			array(
+				"GROUP_ID" => $groupId,
+				"USER_ACTIVE" => "Y"
+			),
+			false,
+			false,
+			array("USER_ID")
+		);
+
+		while ($arUser = $dbUsers->Fetch()) {
+			if (!empty($arUser["USER_ID"]) && !in_array($arUser["USER_ID"], $users)) {
+				$users[] = intval($arUser["USER_ID"]);
+			}
+		}
+
+		// Также включаем всех участников группы
+		$dbAllUsers = CSocNetUserToGroup::GetList(
+			array(),
+			array(
+				"GROUP_ID" => $groupId,
+				"USER_ACTIVE" => "Y"
+			),
+			false,
+			false,
+			array("USER_ID")
+		);
+
+		while ($arUser = $dbAllUsers->Fetch()) {
+			if (!empty($arUser["USER_ID"]) && !in_array($arUser["USER_ID"], $users)) {
+				$users[] = intval($arUser["USER_ID"]);
+			}
+		}
+	}
+
+	return $users;
+}
+
+
 /**
  * Функция получения сотрудников отдела (рекурсивно)
  * @param int $departmentId ID отдела
@@ -516,6 +571,19 @@ if ($bAllowAccess) {
 						}
 					}
 				}
+				// Выбрана социальная группа (префикс SG)
+				elseif (strpos($value, 'SG') === 0) {
+					$groupId = intval(substr($value, 2));
+					if ($groupId > 0) {
+						$groupUsers = getSocialGroupUsers($groupId);
+						foreach ($groupUsers as $userId) {
+							if (!in_array($userId, $arRecipients)) {
+								$arRecipients[] = $userId;
+								$hasOtherRecipients = true;
+							}
+						}
+					}
+				}
 				// Выбран пользователь (префикс U)
 				elseif (strpos($value, 'U') === 0) {
 					$userId = intval(substr($value, 1));
@@ -534,6 +602,8 @@ if ($bAllowAccess) {
 				}
 			}
 		}
+
+
 
 		// Добавляем автора ТОЛЬКО если есть другие получатели
 		if ($hasOtherRecipients) {
@@ -589,6 +659,18 @@ if ($bAllowAccess) {
 					if ($deptId > 0) {
 						$deptUsers = getDepartmentUsersRecursive($deptId);
 						foreach ($deptUsers as $userId) {
+							if (!in_array($userId, $arNoRecipients)) {
+								$arNoRecipients[] = $userId;
+							}
+						}
+					}
+				}
+				// Выбрана социальная группа (префикс SG)
+				elseif (strpos($value, 'SG') === 0) {
+					$groupId = intval(substr($value, 2));
+					if ($groupId > 0) {
+						$groupUsers = getSocialGroupUsers($groupId);
+						foreach ($groupUsers as $userId) {
 							if (!in_array($userId, $arNoRecipients)) {
 								$arNoRecipients[] = $userId;
 							}
