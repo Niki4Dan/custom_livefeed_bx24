@@ -129,7 +129,7 @@ if (Loader::includeModule('pull')) {
 
 	.b24-feed-post-text {
 		font-size: 14px;
-		line-height: 1.5;
+		/* line-height: 1.5; */
 		color: #1a2a3a;
 		word-wrap: break-word;
 	}
@@ -146,7 +146,6 @@ if (Loader::includeModule('pull')) {
 		max-width: 100%;
 		height: auto;
 		border-radius: 12px;
-		margin: 10px 0;
 	}
 
 	.b24-feed-post-text a {

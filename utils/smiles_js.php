@@ -157,7 +157,7 @@ $arSmilesList = getSmilesFromFolder($smilesFolder);
 
                         if (editor && typeof editor.InsertHtml === 'function') {
                             // Вставляем смайлик с классом для идентификации
-                            var html = `<img src="${smile.path}" alt="${smile.name}" class="b24-smile-inserted" style="width: 32px; height: 32px; vertical-align: middle; display: inline-block; cursor: pointer;">`;
+                            var html = `<img src="${smile.path}" alt="${smile.name}" class="b24-smile-inserted" style="width: 22px; height: 22px; vertical-align: middle; display: inline-block; cursor: pointer;">`;
                             editor.InsertHtml(html);
 
                             // Скрываем меню
