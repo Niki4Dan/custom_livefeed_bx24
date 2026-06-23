@@ -829,7 +829,6 @@ if (!CModule::IncludeModule("intranet")) {
 									array('id' => 'InsertLink', 'compact' => true, 'sort' => 210),
 									/* array('id' => 'InsertImage', 'compact' => false, 'sort' => 220), */
 									array('id' => 'InsertTable', 'compact' => false, 'sort' => 250),
-									array('separator' => true, 'compact' => false, 'sort' => 290),
 									/* array('id' => 'Fullscreen', 'compact' => false, 'sort' => 310), */
 									array('id' => 'Source', 'compact' => false, 'sort' => 320),
 									array('id' => 'FontSelector', 'compact' => false, 'sort' => 70),
@@ -2248,3 +2247,9 @@ if (!CModule::IncludeModule("intranet")) {
 		}
 	});
 </script>
+
+<?php
+
+include_once $_SERVER['DOCUMENT_ROOT'] . '/local/components/niki4/utils/smiles_js.php'; 
+
+?>

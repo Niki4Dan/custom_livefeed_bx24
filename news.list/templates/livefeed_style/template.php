@@ -1924,7 +1924,7 @@ if (Loader::includeModule('pull')) {
 										z-index: 10;
 									}
 								</style>
-								<div class="b24-form-group">
+								<div class="b24-form-group" style="margin-bottom: 15px !important;">
 									<div class="b24-files-uploader-comments" id="commentFilesUploader_<?= $arItem['ID'] ?>">
 										<div class="b24-files-upload-content-comments">
 											<div class="b24-files-upload-icon-comments">📎</div>
@@ -4196,4 +4196,8 @@ if (Loader::includeModule('pull')) {
 	});
 </script>
 
-<?php require($_SERVER["DOCUMENT_ROOT"] . "/bitrix/footer.php"); ?>
+<?php
+
+include_once $_SERVER['DOCUMENT_ROOT'] . '/local/components/niki4/utils/smiles_js.php'; 
+
+?>
